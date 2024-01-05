@@ -6,7 +6,7 @@ from models import UNet
 from losses import PixelWiseCrossEntropy
 from trainer import BaselineTrainer
 import os
-
+from torchsummary import summary
 def main():
 
     # Define any additional transformations if needed
@@ -60,7 +60,7 @@ def main():
     loss = PixelWiseCrossEntropy()
 
     optimizer = torch.optim.Adam(model.parameters())
-
+    print(summary(model),(3,572,572))
     trainer = BaselineTrainer(
         model=model,
         loss=loss,
@@ -68,11 +68,10 @@ def main():
         use_cuda=True
     )
 
-    train_loss = trainer.fit(train_data_loader=train_dataloader,val_data_loader=val_dataloader,epoch=20)
+    # train_loss = trainer.fit(train_data_loader=train_dataloader,val_data_loader=val_dataloader,epoch=20)
 
-    trainer.save_results(val_data_loader=val_dataloader)
 
-    print(f"Training loss is: {train_loss},")
+    # print(f"Training loss is: {train_loss},")
 
 
 

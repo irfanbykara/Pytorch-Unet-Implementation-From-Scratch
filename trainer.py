@@ -50,7 +50,7 @@ class BaselineTrainer:
                     x = x.to(device="cuda:0")
                     y = y.to(device="cuda:0")
                 out = self.model(x)
-                loss = self.loss(out, y.squeeze(1))
+                loss = self.loss(out, y)
                 loss.backward()
 
                 # Adjust learning weights

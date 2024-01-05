@@ -6,7 +6,7 @@ from utils import *
 from modules import *
 from consts import *
 import torch.nn.functional as F
-
+from torchvision import models
 class UNet(nn.Module):
   def __init__(self,in_channels=3):
     super(UNet,self).__init__()
@@ -44,4 +44,17 @@ class UNet(nn.Module):
     x = self.final(x)
 
     return x
+
+
+# Define your custom U-Net model
+class UnetReady(nn.Module):
+    def __init__(self, num_classes):
+        super(UnetReady, self).__init__()
+        # Load a pretrained U-Net model from torchvision
+        self.base_model = models.segmentation.fcn_resnet50(pretrained=True, progress=True)
+        # Modify the final layer to match the number of classes in your dataset
+        self.base_model.classifier[-1] = nn.Conv2d(512, num_classes, kernel_size=(1, 1), stride=(1, 1))
+
+    def forward(self, x):
+        return self.base_model(x)['out']
 
