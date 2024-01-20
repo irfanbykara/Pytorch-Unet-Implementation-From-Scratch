@@ -8,14 +8,13 @@ from torchvision.utils import make_grid
 import cv2
 import matplotlib.image as mpimg
 import torch.nn.functional as F
-
+from metrics import *
 
 class BaselineTrainer:
     def __init__(self, model: torch.nn.Module,
                  loss: Callable,
                  optimizer: torch.optim.Optimizer,
                  validate_every=3,
-
                  use_cuda=True,
                  ):
         self.loss = loss
@@ -94,11 +93,18 @@ class BaselineTrainer:
         plt.savefig('training_loss_plot.png')
         plt.show()
 
-    def evaluate(self, val_data_loader: data.DataLoader):
+    def evaluate(self, val_data_loader: data.DataLoader, num_classes=3):
         avg_loss = 0.
         self.model.eval()
         save_dir = "validation_results"
         os.makedirs(save_dir, exist_ok=True)
+
+        # Instantiate metrics
+        nmae_metric = NormalizedMeanAbsoluteError(norm=255.)
+        iou_metric = IntersectionOverUnion(num_classes=3)
+        dice_metric = DiceCoefficient()
+        pixel_accuracy_metric = PixelAccuracy()
+        class_accuracy_metric = ClassAccuracy(num_classes=3)
 
         with torch.no_grad():
 
@@ -112,7 +118,18 @@ class BaselineTrainer:
                 loss = self.loss(out, y)
                 avg_loss += loss.item()
 
+                # Assuming out is the predicted segmentation (you may need to adjust this based on your model)
+                y_pred = torch.argmax(out, dim=1)
 
+                # Compute metrics
+                nmae = nmae_metric(out, y)
+                iou = iou_metric(y_pred, y)
+                dice = dice_metric(y_pred, y)
+                pixel_accuracy = pixel_accuracy_metric(y_pred, y)
+                class_accuracy = class_accuracy_metric(y_pred, y)
+
+                # Print or store the metrics as needed
+                print(f"\nBatch {i + 1}: nMAE = {nmae}, IoU = {iou}, Dice = {dice}, Pixel Accuracy = {pixel_accuracy}")
 
         avg_loss /= len(val_data_loader)
         return avg_loss

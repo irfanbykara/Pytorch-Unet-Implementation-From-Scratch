@@ -17,6 +17,7 @@ def main():
 
         transforms.ToTensor(),
     ])
+
     val_input_transform = transforms.Compose([
         transforms.Resize((572, 572)),
         transforms.ToTensor(),
@@ -59,8 +60,8 @@ def main():
 
     loss = PixelWiseCrossEntropy()
 
-    optimizer = torch.optim.Adam(model.parameters())
-    print(summary(model),(3,572,572))
+    optimizer = torch.optim.Adam(model.parameters(),lr=0.001)
+    # print(summary(model),(3,572,572))
     trainer = BaselineTrainer(
         model=model,
         loss=loss,
@@ -68,10 +69,10 @@ def main():
         use_cuda=True
     )
 
-    # train_loss = trainer.fit(train_data_loader=train_dataloader,val_data_loader=val_dataloader,epoch=20)
+    train_loss = trainer.fit(train_data_loader=train_dataloader,val_data_loader=val_dataloader,epoch=10)
 
 
-    # print(f"Training loss is: {train_loss},")
+    print(f"Training loss is: {train_loss},")
 
 
 
