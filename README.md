@@ -9,6 +9,5 @@ U-Net is a convolutional network designed for fast and precise segmentation of i
 - Customizable network parameters.
 - Supports various image segmentation tasks.
 
-## Usage
-
-Look at main.py to how to run a forward pass.
+## CropDataset
+This project has been implemented due to a personal need to segment the crop parts using a custom dataset. In order to run it with any other dataset one needs to modify the the content of dataset folder. However, for learning purposes I think it is a neat and readable implementation which I think is mostly correct.
